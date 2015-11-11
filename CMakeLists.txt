@@ -96,12 +96,13 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src
 	${CMAKE_BINARY_DIR}/src
 	${CMAKE_BINARY_DIR}/src/shogun)
 
-# check whether any of the modular interfaces are turned ON
-IF (
-	PythonModular OR LuaModular OR RModular OR
-	OctaveModular OR JavaModular OR PerlModular OR
-	RubyModular OR CSharpModular
-   )
+IsAnyTrue("${AVAILABLE_INTERFACES}" ANY_INTERFACE_ENABLED)
+IF (${ANY_INTERFACE_ENABLED})
+	IF(RModular)
+		FIND_PACKAGE(SWIG 2.0.5 REQUIRED)
+	ELSE()
+		FIND_PACKAGE(SWIG 2.0.4 REQUIRED)
+	ENDIF()
 
 	SET(SWIG_VERSION_MINIMUM 2.0.4)
 	IF(CSharpModular)
