@@ -144,7 +144,7 @@ TEST_F(LinearMachineSerializationTest, {{class}})
 	bool train_success=machine->train();
 	ASSERT_TRUE(train_success);
 
-/* predict with trained machine */
+	/* predict with trained machine */
 {% if problem_type == 'binary' %}
 	CBinaryLabels* predictions=machine->apply_binary(feat_test);
 {% elif problem_type == 'regression' %}
