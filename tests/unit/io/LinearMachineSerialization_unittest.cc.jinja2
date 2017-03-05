@@ -35,85 +35,85 @@ using namespace shogun;
 
 class LinearMachineSerializationTest : public testing::Test
 {
-protected:
-	static void SetUpTestCase()
-	{
-		/* generate train and test data */
-		CMath::init_random(5);
-
-		/* binary classification data */
-		SGMatrix<float64_t> X_bin(2, N_TRAIN);
-		SGMatrix<float64_t> X_test_bin(2, N_TEST);
-		SGVector<float64_t> Y_bin(N_TRAIN);
-
-		for (index_t i=0; i<N_TRAIN/2; ++i) {
-			X_bin(0, 2*i)=CMath::randn_double()*0.2;
-			X_bin(1, 2*i)=CMath::randn_double()*0.2;
-			Y_bin[2*i]=1.0;
-
-			X_bin(0, 2*i+1)=1.0+CMath::randn_double()*0.2;
-			X_bin(1, 2*i+1)=2.0+CMath::randn_double()*0.2;
-			Y_bin[2*i+1]=-1.0;
-		}
-
-		for (index_t i=0; i<N_TEST; ++i) {
-			X_test_bin(0, i)=CMath::random(-1.0, 2.0);
-			X_test_bin(1, i)=CMath::random(-1.0, 3.0);
-		}
-
-		feat_train_bin=new CDenseFeatures<float64_t>(X_bin);
-		feat_test_bin=new CDenseFeatures<float64_t>(X_test_bin);
-		label_train_bin=new CBinaryLabels(Y_bin);
-		SG_REF(feat_train_bin);
-		SG_REF(feat_test_bin);
-		SG_REF(label_train_bin);
-
-		/* regression data */
-		SGMatrix<float64_t> X_reg(2, N_TRAIN);
-		SGMatrix<float64_t> X_test_reg(2, N_TEST);
-		SGVector<float64_t> Y_reg(N_TRAIN);
-
-		for (index_t i=0; i<N_TRAIN; ++i)
+	protected:
+		static void SetUpTestCase()
 		{
-			X_reg(0,i)=CMath::random(-1.0, 1.0);
-			X_reg(1,i)=CMath::random(-1.0, 1.0);
-			Y_reg[i]=3*X_reg(0,i)+4*X_reg(1,i);
+			/* generate train and test data */
+			CMath::init_random(5);
+
+			/* binary classification data */
+			SGMatrix<float64_t> X_bin(2, N_TRAIN);
+			SGMatrix<float64_t> X_test_bin(2, N_TEST);
+			SGVector<float64_t> Y_bin(N_TRAIN);
+
+			for (index_t i=0; i<N_TRAIN/2; ++i) {
+				X_bin(0, 2*i)=CMath::randn_double()*0.2;
+				X_bin(1, 2*i)=CMath::randn_double()*0.2;
+				Y_bin[2*i]=1.0;
+
+				X_bin(0, 2*i+1)=1.0+CMath::randn_double()*0.2;
+				X_bin(1, 2*i+1)=2.0+CMath::randn_double()*0.2;
+				Y_bin[2*i+1]=-1.0;
+			}
+
+			for (index_t i=0; i<N_TEST; ++i) {
+				X_test_bin(0, i)=CMath::random(-1.0, 2.0);
+				X_test_bin(1, i)=CMath::random(-1.0, 3.0);
+			}
+
+			feat_train_bin=new CDenseFeatures<float64_t>(X_bin);
+			feat_test_bin=new CDenseFeatures<float64_t>(X_test_bin);
+			label_train_bin=new CBinaryLabels(Y_bin);
+			SG_REF(feat_train_bin);
+			SG_REF(feat_test_bin);
+			SG_REF(label_train_bin);
+
+			/* regression data */
+			SGMatrix<float64_t> X_reg(2, N_TRAIN);
+			SGMatrix<float64_t> X_test_reg(2, N_TEST);
+			SGVector<float64_t> Y_reg(N_TRAIN);
+
+			for (index_t i=0; i<N_TRAIN; ++i)
+			{
+				X_reg(0,i)=CMath::random(-1.0, 1.0);
+				X_reg(1,i)=CMath::random(-1.0, 1.0);
+				Y_reg[i]=3*X_reg(0,i)+4*X_reg(1,i);
+			}
+
+			for (index_t i=0; i<N_TEST; ++i)
+			{
+				X_test_reg(0,i)=CMath::random(-1.0, 1.0);
+				X_test_reg(1,i)=CMath::random(-1.0, 1.0);
+			}
+
+			feat_train_reg=new CDenseFeatures<float64_t>(X_reg);
+			feat_test_reg=new CDenseFeatures<float64_t>(X_test_reg);
+			label_train_reg=new CRegressionLabels(Y_reg);
+			SG_REF(feat_train_reg);
+			SG_REF(feat_test_reg);
+			SG_REF(label_train_reg);
 		}
 
-		for (index_t i=0; i<N_TEST; ++i)
-		{
-			X_test_reg(0,i)=CMath::random(-1.0, 1.0);
-			X_test_reg(1,i)=CMath::random(-1.0, 1.0);
+		static void TearDownTestCase() {
+			SG_UNREF(feat_train_bin);
+			SG_UNREF(feat_test_bin);
+			SG_UNREF(label_train_bin);
+
+			SG_UNREF(feat_train_reg);
+			SG_UNREF(feat_test_reg);
+			SG_UNREF(label_train_reg);
 		}
 
-		feat_train_reg=new CDenseFeatures<float64_t>(X_reg);
-		feat_test_reg=new CDenseFeatures<float64_t>(X_test_reg);
-		label_train_reg=new CRegressionLabels(Y_reg);
-		SG_REF(feat_train_reg);
-		SG_REF(feat_test_reg);
-		SG_REF(label_train_reg);
-	}
+		static const index_t N_TRAIN=30;
+		static const index_t N_TEST=10;
 
-	static void TearDownTestCase() {
-		SG_UNREF(feat_train_bin);
-		SG_UNREF(feat_test_bin);
-		SG_UNREF(label_train_bin);
+		static CDenseFeatures<float64_t>* feat_train_bin;
+		static CDenseFeatures<float64_t>* feat_test_bin;
+		static CBinaryLabels* label_train_bin;
 
-		SG_UNREF(feat_train_reg);
-		SG_UNREF(feat_test_reg);
-		SG_UNREF(label_train_reg);
-	}
-
-	static const index_t N_TRAIN=30;
-	static const index_t N_TEST=10;
-
-	static CDenseFeatures<float64_t>* feat_train_bin;
-	static CDenseFeatures<float64_t>* feat_test_bin;
-	static CBinaryLabels* label_train_bin;
-
-	static CDenseFeatures<float64_t>* feat_train_reg;
-	static CDenseFeatures<float64_t>* feat_test_reg;
-	static CRegressionLabels* label_train_reg;
+		static CDenseFeatures<float64_t>* feat_train_reg;
+		static CDenseFeatures<float64_t>* feat_test_reg;
+		static CRegressionLabels* label_train_reg;
 };
 
 CDenseFeatures<float64_t>* LinearMachineSerializationTest::feat_train_bin=NULL;
@@ -136,7 +136,6 @@ TEST_F(LinearMachineSerializationTest, {{class}})
 	CDenseFeatures<float64_t>* feat_test=feat_test_reg;
 	CRegressionLabels* label_train=label_train_reg;
 {% endif %}
-
 
 	/* instantiate and train the machine */
 	auto machine=new C{{class}}();
