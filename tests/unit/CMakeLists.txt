@@ -73,6 +73,17 @@ ADD_CUSTOM_COMMAND(OUTPUT SerializationXML_unittest.cc
 	COMMENT "Generating SerializationXML_unittest.cc")
 LIST(APPEND TEMPLATE_GENERATED_UNITTEST SerializationXML_unittest.cc)
 
+ADD_CUSTOM_COMMAND(OUTPUT LinearMachineSerialization_unittest.cc
+	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
+        ${CMAKE_CURRENT_SOURCE_DIR}/io/LinearMachineSerialization_unittest.cc.jinja2
+	LinearMachineSerialization_unittest.cc
+	${CMAKE_BINARY_DIR}/src/shogun/base/class_list.cpp
+	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
+        ${CMAKE_CURRENT_SOURCE_DIR}/io/LinearMachineSerialization_unittest.cc.jinja2
+	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+	COMMENT "Generating LinearMachineSerialization_unittest.cc")
+LIST(APPEND TEMPLATE_GENERATED_UNITTEST LinearMachineSerialization_unittest.cc)
+
 add_executable (discover_gtest_tests ${CMAKE_CURRENT_SOURCE_DIR}/discover_gtest_tests.cpp)
 set_target_properties (discover_gtest_tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set_target_properties (discover_gtest_tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin)

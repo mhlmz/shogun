@@ -1,0 +1,220 @@
+/*
+ * THIS IS A GENERATED FILE!  DO NOT CHANGE THIS FILE!  CHANGE THE
+ * CORRESPONDING TEMPLATE FILE, PLEASE!
+ */
+
+
+#include <gtest/gtest.h>
+#include <shogun/lib/config.h>
+#include <shogun/base/init.h>
+#include <shogun/features/DenseFeatures.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/RegressionLabels.h>
+#include <shogun/io/SerializableAsciiFile.h>
+#include <shogun/base/class_list.h>
+#include "utils/Utils.h"
+
+#include <shogun/classifier/AveragedPerceptron.h>
+#include <shogun/classifier/LDA.h>
+#include <shogun/classifier/svm/LibLinear.h>
+#include <shogun/classifier/LPBoost.h>
+#include <shogun/classifier/LPM.h>
+#include <shogun/classifier/svm/NewtonSVM.h>
+#include <shogun/classifier/Perceptron.h>
+#include <shogun/classifier/svm/SGDQN.h>
+#include <shogun/classifier/svm/SVMLin.h>
+#include <shogun/classifier/svm/SVMOcas.h>
+#include <shogun/classifier/svm/SVMSGD.h>
+#include <shogun/classifier/LPBoost.h>
+#include <shogun/classifier/LPM.h>
+#include <shogun/regression/svr/LibLinearRegression.h>
+#include <shogun/regression/LinearRidgeRegression.h>
+
+using namespace shogun;
+
+class LinearMachineSerializationTest : public testing::Test
+{
+protected:
+	static void SetUpTestCase()
+	{
+		/* generate train and test data */
+		CMath::init_random(5);
+
+		/* binary classification data */
+		SGMatrix<float64_t> X_bin(2, N_TRAIN);
+		SGMatrix<float64_t> X_test_bin(2, N_TEST);
+		SGVector<float64_t> Y_bin(N_TRAIN);
+
+		for (index_t i=0; i<N_TRAIN/2; ++i) {
+			X_bin(0, 2*i)=CMath::randn_double()*0.2;
+			X_bin(1, 2*i)=CMath::randn_double()*0.2;
+			Y_bin[2*i]=1.0;
+
+			X_bin(0, 2*i+1)=1.0+CMath::randn_double()*0.2;
+			X_bin(1, 2*i+1)=2.0+CMath::randn_double()*0.2;
+			Y_bin[2*i+1]=-1.0;
+		}
+
+		for (index_t i=0; i<N_TEST; ++i) {
+			X_test_bin(0, i)=CMath::random(-1.0, 2.0);
+			X_test_bin(1, i)=CMath::random(-1.0, 3.0);
+		}
+
+		feat_train_bin=new CDenseFeatures<float64_t>(X_bin);
+		feat_test_bin=new CDenseFeatures<float64_t>(X_test_bin);
+		label_train_bin=new CBinaryLabels(Y_bin);
+		SG_REF(feat_train_bin);
+		SG_REF(feat_test_bin);
+		SG_REF(label_train_bin);
+
+		/* regression data */
+		SGMatrix<float64_t> X_reg(2, N_TRAIN);
+		SGMatrix<float64_t> X_test_reg(2, N_TEST);
+		SGVector<float64_t> Y_reg(N_TRAIN);
+
+		for (index_t i=0; i<N_TRAIN; ++i)
+		{
+			X_reg(0,i)=CMath::random(-1.0, 1.0);
+			X_reg(1,i)=CMath::random(-1.0, 1.0);
+			Y_reg[i]=3*X_reg(0,i)+4*X_reg(1,i);
+		}
+
+		for (index_t i=0; i<N_TEST; ++i)
+		{
+			X_test_reg(0,i)=CMath::random(-1.0, 1.0);
+			X_test_reg(1,i)=CMath::random(-1.0, 1.0);
+		}
+
+		feat_train_reg=new CDenseFeatures<float64_t>(X_reg);
+		feat_test_reg=new CDenseFeatures<float64_t>(X_test_reg);
+		label_train_reg=new CRegressionLabels(Y_reg);
+		SG_REF(feat_train_reg);
+		SG_REF(feat_test_reg);
+		SG_REF(label_train_reg);
+	}
+
+	static void TearDownTestCase() {
+		SG_UNREF(feat_train_bin);
+		SG_UNREF(feat_test_bin);
+		SG_UNREF(label_train_bin);
+
+		SG_UNREF(feat_train_reg);
+		SG_UNREF(feat_test_reg);
+		SG_UNREF(label_train_reg);
+	}
+
+	static const index_t N_TRAIN=30;
+	static const index_t N_TEST=10;
+
+	static CDenseFeatures<float64_t>* feat_train_bin;
+	static CDenseFeatures<float64_t>* feat_test_bin;
+	static CBinaryLabels* label_train_bin;
+
+	static CDenseFeatures<float64_t>* feat_train_reg;
+	static CDenseFeatures<float64_t>* feat_test_reg;
+	static CRegressionLabels* label_train_reg;
+};
+
+CDenseFeatures<float64_t>* LinearMachineSerializationTest::feat_train_bin=NULL;
+CDenseFeatures<float64_t>* LinearMachineSerializationTest::feat_test_bin=NULL;
+CBinaryLabels* LinearMachineSerializationTest::label_train_bin=NULL;
+
+CDenseFeatures<float64_t>* LinearMachineSerializationTest::feat_train_reg=NULL;
+CDenseFeatures<float64_t>* LinearMachineSerializationTest::feat_test_reg=NULL;
+CRegressionLabels* LinearMachineSerializationTest::label_train_reg=NULL;
+
+{% macro test(class, problem_type) -%}
+TEST_F(LinearMachineSerializationTest, {{class}})
+{
+{% if problem_type == 'binary' %}
+	CDenseFeatures<float64_t>* feat_train=feat_train_bin;
+	CDenseFeatures<float64_t>* feat_test=feat_test_bin;
+	CBinaryLabels* label_train=label_train_bin;
+{% elif problem_type == 'regression' %}
+	CDenseFeatures<float64_t>* feat_train=feat_train_reg;
+	CDenseFeatures<float64_t>* feat_test=feat_test_reg;
+	CRegressionLabels* label_train=label_train_reg;
+{% endif %}
+
+
+	/* instantiate and train the machine */
+	auto machine=new C{{class}}();
+	machine->set_features(feat_train);
+	machine->set_labels(label_train);
+	bool train_success=machine->train();
+	ASSERT_TRUE(train_success);
+
+/* predict with trained machine */
+{% if problem_type == 'binary' %}
+	CBinaryLabels* predictions=machine->apply_binary(feat_test);
+{% elif problem_type == 'regression' %}
+	CRegressionLabels* predictions=machine->apply_regression(feat_test);
+{% endif %}
+	SGVector<float64_t> prediction_vector=predictions->get_labels();
+
+	/* serialize the machine */
+	std::string class_name("{{class}}");
+	std::string file_template="/tmp/shogun-unittest-linear-machine-serialization-" + class_name + ".XXXXXX";
+	char* filename=mktemp_cst(const_cast<char*>(file_template.c_str()));
+
+	CSerializableAsciiFile *file=new CSerializableAsciiFile(filename, 'w');
+	bool save_success=machine->save_serializable(file);
+	file->close();
+	SG_UNREF(file);
+	ASSERT_TRUE(save_success);
+
+	/* deserialize the machine */
+	file=new CSerializableAsciiFile(filename, 'r');
+	auto deserialized_model=(C{{class}}*)new_sgserializable(class_name.c_str(), PT_NOT_GENERIC);
+	ASSERT_TRUE(deserialized_model != NULL);
+	bool load_success=deserialized_model->load_serializable(file);
+	file->close();
+	SG_UNREF(file);
+	ASSERT_TRUE(load_success);
+
+	/* predict with deserialized machine */
+{% if problem_type == 'binary' %}
+	CBinaryLabels* deserialized_predictions=deserialized_model->apply_binary(feat_test);
+{% elif problem_type == 'regression' %}
+	CRegressionLabels* deserialized_predictions=deserialized_model->apply_regression(feat_test);
+{% endif %}
+	SGVector<float64_t> deserialized_prediction_vector=deserialized_predictions->get_labels();
+
+	/* check whether the predictions are equal */
+	float64_t accuracy=1e-14;
+	for (index_t i=0; i<N_TEST; ++i)
+	EXPECT_NEAR(prediction_vector[i], deserialized_prediction_vector[i], accuracy);
+
+	int delete_success=unlink(filename);
+	ASSERT_EQ(0, delete_success);
+
+	SG_UNREF(machine);
+	SG_UNREF(deserialized_model);
+	SG_UNREF(predictions);
+	SG_UNREF(deserialized_predictions);
+}
+{%- endmacro %}
+
+{{ test('AveragedPerceptron', 'binary') }}
+{{ test('LDA', 'binary') }}
+{{ test('LibLinear', 'binary') }}
+{{ test('Perceptron', 'binary') }}
+{{ test('SGDQN', 'binary') }}
+{{ test('SVMLin', 'binary') }}
+{{ test('SVMSGD', 'binary') }}
+
+#ifdef HAVE_LAPACK
+{{ test('NewtonSVM', 'binary') }}
+{{ test('LibLinearRegression', 'regression') }}
+{{ test('LinearRidgeRegression', 'regression') }}
+#endif
+
+#ifdef USE_CPLEX
+{{ test('LPBoost', 'binary') }}
+{{ test('LPM', 'binary') }}
+#endif
+
+#ifdef USE_GPL_SHOGUN
+{{ test('SVMOcas', 'binary') }}
+#endif
