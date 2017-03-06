@@ -116,7 +116,7 @@ class LinearMachineSerializationTest : public testing::Test
 		static CRegressionLabels* label_train_reg;
 };
 
-CDenseFeatures<float64_t>* LinearMachineSerializationTest::feat_train_bin=NULL;
+CDenseFeatures<float64_t>* LinearMachineSerializationTest::feat_train_bin;
 CDenseFeatures<float64_t>* LinearMachineSerializationTest::feat_test_bin=NULL;
 CBinaryLabels* LinearMachineSerializationTest::label_train_bin=NULL;
 
@@ -183,7 +183,7 @@ TEST_F(LinearMachineSerializationTest, {{class}})
 	/* check whether the predictions are equal */
 	float64_t accuracy=1e-14;
 	for (index_t i=0; i<N_TEST; ++i)
-	EXPECT_NEAR(prediction_vector[i], deserialized_prediction_vector[i], accuracy);
+		EXPECT_NEAR(prediction_vector[i], deserialized_prediction_vector[i], accuracy);
 
 	int delete_success=unlink(filename);
 	ASSERT_EQ(0, delete_success);
